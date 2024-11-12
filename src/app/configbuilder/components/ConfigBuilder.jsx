@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { BiCopy, BiCheck, BiCode } from 'react-icons/bi';
 import { FaEthereum, FaWallet } from 'react-icons/fa';
 
@@ -19,58 +18,59 @@ const ConfigBuilder = () => {
     // ... existing code generation logic ...
   };
 
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-    
-    const items = Array.from(components);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    setComponents(items);
-  };
-
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generateCode());
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  const [components] = useState([
-    { id: 'chains', content: 'Chains Configuration' },
-    { id: 'connectors', content: 'Wallet Connectors' },
-  ]);
-
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white p-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Language Toggle */}
-        <div className="flex justify-end mb-8">
-          <button
-            onClick={() => setShowSwahili(!showSwahili)}
-            className="bg-tertiary px-4 py-2 text-sm font-aspekta"
-          >
-            {showSwahili ? "Switch to English" : "Badili lugha"}
-          </button>
+    <div className="min-h-screen bg-[#f5f5f5] text-gray-900">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+        {/* Left Side - Let's Get Started */}
+        <div className="bg-primary p-12 flex flex-col justify-between relative">
+          <div>
+            <h1 className="text-7xl font-gordquick text-white mb-6">
+              Let's get started.
+            </h1>
+            <p className="text-xl font-aspekta text-white/80">
+              Configure your Wagmi setup with a few simple steps.
+            </p>
+          </div>
+          
+          {/* Decorative Image */}
+          <div className="absolute bottom-0 right-0 p-8">
+            <img 
+              src="/api/placeholder/400/320" 
+              alt="Decorative" 
+              className="opacity-20"
+            />
+          </div>
+          
+          {/* Language Toggle */}
+          <div className="relative z-10">
+            <button
+              onClick={() => setShowSwahili(!showSwahili)}
+              className="text-white/80 hover:text-white font-aspekta text-sm underline"
+            >
+              {showSwahili ? "Switch to English" : "Badili lugha"}
+            </button>
+          </div>
         </div>
 
-        {/* Main Form Section */}
-        <div className="space-y-12">
-          <div className="mb-16">
-            <h1 className="text-5xl font-gordquick mb-4">Let's get started.</h1>
-            <p className="text-gray-400 font-aspekta">Configure your Wagmi setup with a few simple steps.</p>
-          </div>
-
-          <div className="space-y-8">
+        {/* Right Side - Form */}
+        <div className="p-12 overflow-y-auto">
+          <div className="max-w-xl mx-auto space-y-12">
             {/* Chains Section */}
-            <div className="space-y-4">
-              <label className="block text-2xl font-gordquick">
-                <FaEthereum className="inline-block mr-2" />
+            <div className="space-y-6">
+              <label className="block text-2xl font-gordquick text-gray-800 flex items-center gap-3">
+                <FaEthereum className="text-primary" />
                 Select Your Chains
               </label>
               <input
                 type="text"
                 placeholder="e.g., mainnet, sepolia"
-                className="w-full bg-transparent border-b-2 border-gray-600 p-4 font-aspekta text-lg
+                className="w-full bg-transparent border-b-2 border-gray-300 p-4 font-aspekta text-lg
                          focus:outline-none focus:border-primary"
                 onChange={(e) => setConfig(prev => ({ ...prev, chains: e.target.value }))}
                 value={config.chains}
@@ -78,13 +78,13 @@ const ConfigBuilder = () => {
             </div>
 
             {/* Wallet Connectors Section */}
-            <div className="space-y-4">
-              <label className="block text-2xl font-gordquick">
-                <FaWallet className="inline-block mr-2" />
+            <div className="space-y-6">
+              <label className="block text-2xl font-gordquick text-gray-800 flex items-center gap-3">
+                <FaWallet className="text-primary" />
                 Choose Your Wallets
               </label>
               
-              <div className="space-y-6 pl-4">
+              <div className="space-y-8 pl-4">
                 {/* MetaMask */}
                 <div className="flex items-center gap-4">
                   <input
@@ -98,7 +98,7 @@ const ConfigBuilder = () => {
                       setConfig(prev => ({ ...prev, connectors: newConnectors }));
                     }}
                   />
-                  <label htmlFor="metamask" className="text-xl font-aspekta">MetaMask</label>
+                  <label htmlFor="metamask" className="text-xl font-aspekta text-gray-700">MetaMask</label>
                 </div>
 
                 {/* WalletConnect */}
@@ -115,13 +115,13 @@ const ConfigBuilder = () => {
                         setConfig(prev => ({ ...prev, connectors: newConnectors }));
                       }}
                     />
-                    <label htmlFor="walletconnect" className="text-xl font-aspekta">WalletConnect</label>
+                    <label htmlFor="walletconnect" className="text-xl font-aspekta text-gray-700">WalletConnect</label>
                   </div>
                   {config.connectors.includes('WalletConnect') && (
                     <input
                       type="text"
                       placeholder="Project ID"
-                      className="w-full bg-transparent border-b-2 border-gray-600 p-4 font-aspekta
+                      className="w-full bg-transparent border-b-2 border-gray-300 p-4 font-aspekta
                                focus:outline-none focus:border-primary ml-10"
                       onChange={(e) => setConfig(prev => ({ ...prev, projectId: e.target.value }))}
                       value={config.projectId}
@@ -143,13 +143,13 @@ const ConfigBuilder = () => {
                         setConfig(prev => ({ ...prev, connectors: newConnectors }));
                       }}
                     />
-                    <label htmlFor="coinbase" className="text-xl font-aspekta">Coinbase Wallet</label>
+                    <label htmlFor="coinbase" className="text-xl font-aspekta text-gray-700">Coinbase Wallet</label>
                   </div>
                   {config.connectors.includes('Coinbase') && (
                     <input
                       type="text"
                       placeholder="App Name"
-                      className="w-full bg-transparent border-b-2 border-gray-600 p-4 font-aspekta
+                      className="w-full bg-transparent border-b-2 border-gray-300 p-4 font-aspekta
                                focus:outline-none focus:border-primary ml-10"
                       onChange={(e) => setConfig(prev => ({ ...prev, appName: e.target.value }))}
                       value={config.appName}
@@ -160,46 +160,54 @@ const ConfigBuilder = () => {
             </div>
 
             {/* Infura ID Section */}
-            <div className="space-y-4">
-              <label className="block text-2xl font-gordquick">Infura ID</label>
+            <div className="space-y-6">
+              <label className="block text-2xl font-gordquick text-gray-800">Infura ID</label>
               <input
                 type="text"
                 placeholder="Enter your Infura ID"
-                className="w-full bg-transparent border-b-2 border-gray-600 p-4 font-aspekta
+                className="w-full bg-transparent border-b-2 border-gray-300 p-4 font-aspekta
                          focus:outline-none focus:border-primary"
                 onChange={(e) => setConfig(prev => ({ ...prev, infuraId: e.target.value }))}
                 value={config.infuraId}
               />
             </div>
-          </div>
 
-          {/* View Code Button */}
-          <div className="pt-12">
-            <button
-              onClick={() => setShowCode(!showCode)}
-              className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-gordquick text-xl
-                       hover:bg-primary/90 transition-colors"
-            >
-              <BiCode className="w-6 h-6" />
-              VIEW CODE
-            </button>
+            {/* View Code Button */}
+            <div className="pt-6">
+              <button
+                onClick={() => setShowCode(!showCode)}
+                className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-gordquick text-xl
+                         hover:bg-primary/90 transition-colors rounded-lg"
+              >
+                <BiCode className="w-6 h-6" />
+                VIEW CODE
+              </button>
 
-            {showCode && (
-              <div className="mt-8 relative bg-[#2a2a2a] p-8 font-aspekta">
-                <button
-                  onClick={copyToClipboard}
-                  className="absolute top-4 right-4 text-white hover:text-primary transition-colors"
-                >
-                  {copiedCode ? <BiCheck className="w-6 h-6" /> : <BiCopy className="w-6 h-6" />}
-                </button>
-                <pre className="text-gray-300 overflow-x-auto">
-                  <code>{generateCode()}</code>
-                </pre>
-              </div>
-            )}
+              {showCode && (
+                <div className="mt-8 relative bg-gray-100 p-8 rounded-lg font-aspekta">
+                  <button
+                    onClick={copyToClipboard}
+                    className="absolute top-4 right-4 text-gray-600 hover:text-primary transition-colors"
+                  >
+                    {copiedCode ? <BiCheck className="w-6 h-6" /> : <BiCopy className="w-6 h-6" />}
+                  </button>
+                  <pre className="text-gray-800 overflow-x-auto">
+                    <code>{generateCode()}</code>
+                  </pre>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* Toast Message */}
+      {copiedCode && (
+        <div className="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg
+                      shadow-lg font-aspekta animate-fade-in-up">
+          Copied to clipboard!
+        </div>
+      )}
     </div>
   );
 };
