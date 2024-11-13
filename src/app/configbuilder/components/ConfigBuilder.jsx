@@ -15,7 +15,59 @@ const ConfigBuilder = () => {
   });
 
   const generateCode = () => {
-    // ... existing code generation logic ...
+    const code = `import { configureChains, createConfig } from 'wagmi'
+import { mainnet, base, baseGoerli } from 'wagmi/chains'
+import { createPublicClient, http } from 'viem'
+${config.connectors.includes('MetaMask') ? "import { MetaMaskConnector } from 'wagmi/connectors/metaMask'" : ''}
+${config.connectors.includes('WalletConnect') ? "import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'" : ''}
+${config.connectors.includes('Coinbase') ? "import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'" : ''}
+import { infuraProvider } from 'wagmi/providers/infura'
+import { publicProvider } from 'wagmi/providers/public'
+
+const { chains } = configureChains(
+  [mainnet, base, baseGoerli],
+  [
+    infuraProvider({ apiKey: '${config.infuraId}' }),
+    publicProvider()
+  ]
+)
+
+const connectors = [
+  ${config.connectors.map(connector => {
+    switch(connector) {
+      case 'MetaMask':
+        return 'new MetaMaskConnector({ chains }),';
+      case 'WalletConnect':
+        return `new WalletConnectConnector({
+    chains,
+    options: {
+      projectId: '${config.projectId}',
+      qrcode: true,
+    },
+  }),`;
+      case 'Coinbase':
+        return `new CoinbaseWalletConnector({
+    chains,
+    options: {
+      appName: '${config.appName}',
+    },
+  }),`;
+      default:
+        return '';
+    }
+  }).join('\n  ')}
+]
+
+export const config = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient: createPublicClient({
+    chain: mainnet,
+    transport: http()
+  })
+})`;
+    
+    return code;
   };
 
   const copyToClipboard = () => {
@@ -63,7 +115,7 @@ const ConfigBuilder = () => {
           <div className="max-w-xl mx-auto space-y-12">
             {/* Chains Section */}
             <div className="space-y-6">
-              <label className="block text-2xl font-gordquick text-gray-800 flex items-center gap-3">
+              <label className="inline-flex items-center gap-3 text-2xl font-gordquick text-gray-800">
                 <FaEthereum className="text-primary" />
                 Select Your Chains
               </label>
@@ -79,14 +131,14 @@ const ConfigBuilder = () => {
 
             {/* Wallet Connectors Section */}
             <div className="space-y-6">
-              <label className="block text-2xl font-gordquick text-gray-800 flex items-center gap-3">
+              <label className="inline-flex items-center gap-3 text-2xl font-gordquick text-gray-800">
                 <FaWallet className="text-primary" />
                 Choose Your Wallets
               </label>
               
               <div className="space-y-8 pl-4">
                 {/* MetaMask */}
-                <div className="flex items-center gap-4">
+                <div className="inline-flex items-center gap-4">
                   <input
                     type="checkbox"
                     id="metamask"
@@ -103,7 +155,7 @@ const ConfigBuilder = () => {
 
                 {/* WalletConnect */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4">
+                  <div className="inline-flex items-center gap-4">
                     <input
                       type="checkbox"
                       id="walletconnect"
@@ -131,7 +183,7 @@ const ConfigBuilder = () => {
 
                 {/* Coinbase */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4">
+                  <div className="inline-flex items-center gap-4">
                     <input
                       type="checkbox"
                       id="coinbase"
@@ -161,7 +213,7 @@ const ConfigBuilder = () => {
 
             {/* Infura ID Section */}
             <div className="space-y-6">
-              <label className="block text-2xl font-gordquick text-gray-800">Infura ID</label>
+              <label className="inline-flex text-2xl font-gordquick text-gray-800">Infura ID</label>
               <input
                 type="text"
                 placeholder="Enter your Infura ID"
@@ -176,7 +228,7 @@ const ConfigBuilder = () => {
             <div className="pt-6">
               <button
                 onClick={() => setShowCode(!showCode)}
-                className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-gordquick text-xl
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white font-gordquick text-xl
                          hover:bg-primary/90 transition-colors rounded-lg"
               >
                 <BiCode className="w-6 h-6" />
@@ -191,7 +243,7 @@ const ConfigBuilder = () => {
                   >
                     {copiedCode ? <BiCheck className="w-6 h-6" /> : <BiCopy className="w-6 h-6" />}
                   </button>
-                  <pre className="text-gray-800 overflow-x-auto">
+                  <pre className="text-gray-800 overflow-x-auto text-sm">
                     <code>{generateCode()}</code>
                   </pre>
                 </div>
